@@ -93,7 +93,7 @@ export default function Index() {
                 <Icon name="Zap" className="text-white" size={24} />
               </div>
               <h1 className="text-2xl font-bold bg-gradient-to-r from-[#FF6B6B] to-[#6C5CE7] bg-clip-text text-transparent">
-                Маркетплейс Запросов
+                Доска запросов
               </h1>
             </div>
             <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
@@ -383,7 +383,7 @@ export default function Index() {
                 О проекте
               </h3>
               <p className="text-gray-600">
-                Маркетплейс запросов — платформа для быстрого поиска товаров и услуг напрямую от частных продавцов.
+                Доска запросов — платформа для быстрого поиска товаров и услуг напрямую от частных продавцов.
               </p>
             </div>
             <div>
@@ -411,7 +411,7 @@ export default function Index() {
             </div>
           </div>
           <div className="text-center text-gray-500 text-sm pt-8 border-t border-gray-200">
-            © 2024 Маркетплейс Запросов. Все права защищены.
+            © 2024 Доска запросов. Все права защищены.
           </div>
         </div>
       </footer>
