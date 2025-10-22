@@ -19,14 +19,15 @@ interface Request {
   authorAvatar: string;
   rating: number;
   responses: number;
+  description?: string;
 }
 
 const categories = [
-  { name: 'Электроника', icon: 'Smartphone', gradient: 'from-[#FF6B6B] to-[#6C5CE7]' },
-  { name: 'Недвижимость', icon: 'Home', gradient: 'from-[#4ECDC4] to-[#6C5CE7]' },
-  { name: 'Услуги', icon: 'Briefcase', gradient: 'from-[#FFE66D] to-[#FF6B6B]' },
-  { name: 'Транспорт', icon: 'Car', gradient: 'from-[#6C5CE7] to-[#4ECDC4]' },
-  { name: 'Разное', icon: 'Package', gradient: 'from-[#FF6B6B] to-[#FFE66D]' }
+  { name: 'Электроника', icon: 'Smartphone', gradient: 'from-yellow-400 to-yellow-600' },
+  { name: 'Недвижимость', icon: 'Home', gradient: 'from-gray-400 to-gray-600' },
+  { name: 'Услуги', icon: 'Briefcase', gradient: 'from-yellow-300 to-gray-500' },
+  { name: 'Транспорт', icon: 'Car', gradient: 'from-gray-500 to-yellow-400' },
+  { name: 'Разное', icon: 'Package', gradient: 'from-yellow-500 to-gray-400' }
 ];
 
 const mockRequests: Request[] = [
@@ -38,7 +39,8 @@ const mockRequests: Request[] = [
     author: 'Анна Смирнова',
     authorAvatar: 'AS',
     rating: 4.8,
-    responses: 12
+    responses: 12,
+    description: 'Ищу iPhone 15 Pro в хорошем состоянии, желательно с комплектом. Интересует модель на 256GB или 512GB. Готов рассмотреть варианты с небольшими царапинами.'
   },
   {
     id: 2,
@@ -48,7 +50,8 @@ const mockRequests: Request[] = [
     author: 'Дмитрий Козлов',
     authorAvatar: 'ДК',
     rating: 4.9,
-    responses: 8
+    responses: 8,
+    description: 'Требуется опытный мастер для комплексного ремонта квартиры 60кв.м. Нужно сделать штукатурку, шпаклевку, поклейку обоев, укладку ламината.'
   },
   {
     id: 3,
@@ -58,7 +61,8 @@ const mockRequests: Request[] = [
     author: 'Елена Волкова',
     authorAvatar: 'ЕВ',
     rating: 5.0,
-    responses: 15
+    responses: 15,
+    description: 'Ищу MacBook Air M2 для работы и учебы. Интересует базовая конфигурация 8GB/256GB. Состояние хорошее или отличное, без повреждений.'
   }
 ];
 
@@ -66,6 +70,19 @@ export default function Index() {
   const [activeTab, setActiveTab] = useState('feed');
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [expandedRequests, setExpandedRequests] = useState<Set<number>>(new Set());
+
+  const toggleExpanded = (id: number) => {
+    setExpandedRequests(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(id)) {
+        newSet.delete(id);
+      } else {
+        newSet.add(id);
+      }
+      return newSet;
+    });
+  };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -84,27 +101,27 @@ export default function Index() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-white to-gray-100">
       <header className="sticky top-0 z-50 backdrop-blur-xl bg-white/80 border-b border-gray-200">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#FF6B6B] via-[#6C5CE7] to-[#4ECDC4] flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-400 to-gray-600 flex items-center justify-center">
                 <Icon name="Zap" className="text-white" size={24} />
               </div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-[#FF6B6B] to-[#6C5CE7] bg-clip-text text-transparent">
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-yellow-500 to-gray-700 bg-clip-text text-transparent">
                 Доска запросов
               </h1>
             </div>
             <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
               <DialogTrigger asChild>
-                <Button className="bg-gradient-to-r from-[#FF6B6B] to-[#6C5CE7] hover:opacity-90 text-white shadow-lg">
+                <Button className="bg-gradient-to-r from-yellow-400 to-yellow-600 hover:opacity-90 text-gray-900 font-semibold shadow-lg">
                   Создать запрос
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                  <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-[#FF6B6B] to-[#6C5CE7] bg-clip-text text-transparent">
+                  <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-yellow-500 to-gray-700 bg-clip-text text-transparent">
                     Создать новый запрос
                   </DialogTitle>
                 </DialogHeader>
@@ -169,7 +186,7 @@ export default function Index() {
                     <Label className="text-base font-semibold">
                       Фото (необязательно)
                     </Label>
-                    <div className="border-2 border-dashed border-gray-300 rounded-2xl p-8 text-center hover:border-[#6C5CE7] transition-colors cursor-pointer">
+                    <div className="border-2 border-dashed border-gray-300 rounded-2xl p-8 text-center hover:border-yellow-500 transition-colors cursor-pointer">
                       <input
                         type="file"
                         id="image-upload"
@@ -199,7 +216,7 @@ export default function Index() {
                           </div>
                         ) : (
                           <div className="space-y-3">
-                            <div className="w-16 h-16 mx-auto rounded-full bg-gradient-to-br from-[#FF6B6B] to-[#6C5CE7] flex items-center justify-center">
+                            <div className="w-16 h-16 mx-auto rounded-full bg-gradient-to-br from-yellow-400 to-gray-600 flex items-center justify-center">
                               <Icon name="Upload" className="text-white" size={32} />
                             </div>
                             <div>
@@ -219,7 +236,7 @@ export default function Index() {
                   <div className="flex gap-3 pt-4">
                     <Button
                       onClick={handleCreateRequest}
-                      className="flex-1 h-12 bg-gradient-to-r from-[#FF6B6B] to-[#6C5CE7] hover:opacity-90 text-white shadow-lg text-base font-semibold"
+                      className="flex-1 h-12 bg-gradient-to-r from-yellow-400 to-yellow-600 hover:opacity-90 text-gray-900 shadow-lg text-base font-semibold"
                     >
                       <Icon name="Send" size={20} className="mr-2" />
                       Опубликовать запрос
@@ -256,7 +273,7 @@ export default function Index() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center gap-2 px-4 py-2.5 rounded-lg transition-all whitespace-nowrap ${
                   activeTab === tab.id
-                    ? 'bg-gradient-to-r from-[#FF6B6B] to-[#6C5CE7] text-white shadow-md'
+                    ? 'bg-gradient-to-r from-yellow-400 to-yellow-600 text-gray-900 font-semibold shadow-md'
                     : 'text-gray-600 hover:bg-gray-100'
                 }`}
               >
@@ -274,14 +291,14 @@ export default function Index() {
             <Icon name="Search" className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
             <Input
               placeholder="Поиск запросов..."
-              className="pl-12 h-14 text-lg rounded-2xl border-2 border-gray-200 focus:border-[#6C5CE7] transition-colors"
+              className="pl-12 h-14 text-lg rounded-2xl border-2 border-gray-200 focus:border-yellow-500 transition-colors"
             />
           </div>
         </div>
 
         <section className="mb-12 animate-scale-in">
           <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-            <span className="bg-gradient-to-r from-[#FF6B6B] to-[#6C5CE7] bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-yellow-500 to-gray-700 bg-clip-text text-transparent">
               Категории
             </span>
           </h2>
@@ -305,11 +322,11 @@ export default function Index() {
         <section className="animate-fade-in" style={{ animationDelay: '200ms' }}>
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold flex items-center gap-2">
-              <span className="bg-gradient-to-r from-[#4ECDC4] to-[#6C5CE7] bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-yellow-500 to-gray-700 bg-clip-text text-transparent">
                 Актуальные запросы
               </span>
             </h2>
-            <Button variant="outline" className="gap-2 border-2 hover:border-[#6C5CE7]">
+            <Button variant="outline" className="gap-2 border-2 hover:border-yellow-500">
               <Icon name="SlidersHorizontal" size={18} />
               Фильтры
             </Button>
@@ -319,12 +336,12 @@ export default function Index() {
             {mockRequests.map((request, index) => (
               <Card
                 key={request.id}
-                className="p-6 hover:shadow-2xl transition-all duration-300 border-2 border-transparent hover:border-[#6C5CE7] group animate-scale-in"
+                className="p-6 hover:shadow-2xl transition-all duration-300 border-2 border-transparent hover:border-yellow-500 group animate-scale-in"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 <div className="flex flex-col md:flex-row md:items-start gap-4">
                   <Avatar className="w-14 h-14 border-2 border-gray-200">
-                    <AvatarFallback className="bg-gradient-to-br from-[#FF6B6B] to-[#6C5CE7] text-white font-bold">
+                    <AvatarFallback className="bg-gradient-to-br from-yellow-400 to-gray-600 text-white font-bold">
                       {request.authorAvatar}
                     </AvatarFallback>
                   </Avatar>
@@ -332,39 +349,49 @@ export default function Index() {
                   <div className="flex-1">
                     <div className="flex items-start justify-between gap-4 mb-3">
                       <div>
-                        <h3 className="text-xl font-bold mb-1 group-hover:text-[#6C5CE7] transition-colors">
+                        <h3 className="text-xl font-bold mb-1 group-hover:text-yellow-600 transition-colors">
                           {request.title}
                         </h3>
                         <p className="text-gray-600 text-sm">{request.author}</p>
                       </div>
-                      <Badge className="bg-gradient-to-r from-[#FFE66D] to-[#FF6B6B] text-gray-900 border-0 font-bold whitespace-nowrap">
+                      <Badge className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-gray-900 border-0 font-bold whitespace-nowrap">
                         {request.category}
                       </Badge>
                     </div>
 
+                    {expandedRequests.has(request.id) && request.description && (
+                      <div className="mb-4 p-4 bg-gray-50 rounded-lg animate-fade-in">
+                        <p className="text-gray-700 leading-relaxed">{request.description}</p>
+                      </div>
+                    )}
+
                     <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 mb-4">
                       <div className="flex items-center gap-1.5">
-                        <Icon name="Wallet" size={16} className="text-[#4ECDC4]" />
+                        <Icon name="Wallet" size={16} className="text-yellow-600" />
                         <span className="font-semibold">{request.budget}</span>
                       </div>
                       <div className="flex items-center gap-1.5">
-                        <Icon name="Star" size={16} className="text-[#FFE66D] fill-[#FFE66D]" />
+                        <Icon name="Star" size={16} className="text-yellow-400 fill-yellow-400" />
                         <span className="font-semibold">{request.rating}</span>
                       </div>
                       <div className="flex items-center gap-1.5">
-                        <Icon name="MessageCircle" size={16} className="text-[#6C5CE7]" />
+                        <Icon name="MessageCircle" size={16} className="text-gray-600" />
                         <span className="font-semibold">{request.responses} откликов</span>
                       </div>
                     </div>
 
                     <div className="flex flex-wrap gap-3">
-                      <Button className="bg-gradient-to-r from-[#4ECDC4] to-[#6C5CE7] hover:opacity-90 text-white shadow-lg gap-2">
+                      <Button className="bg-gradient-to-r from-yellow-400 to-yellow-600 hover:opacity-90 text-gray-900 font-semibold shadow-lg gap-2">
                         <Icon name="Send" size={16} />
                         Откликнуться
                       </Button>
-                      <Button variant="outline" className="gap-2 border-2 hover:border-[#6C5CE7]">
-                        <Icon name="Eye" size={16} />
-                        Подробнее
+                      <Button 
+                        variant="outline" 
+                        className="gap-2 border-2 hover:border-yellow-500"
+                        onClick={() => toggleExpanded(request.id)}
+                      >
+                        <Icon name={expandedRequests.has(request.id) ? "ChevronUp" : "ChevronDown"} size={16} />
+                        {expandedRequests.has(request.id) ? 'Свернуть' : 'Развернуть'}
                       </Button>
                     </div>
                   </div>
@@ -379,7 +406,7 @@ export default function Index() {
         <div className="container mx-auto px-4 py-12">
           <div className="grid md:grid-cols-3 gap-8 mb-8">
             <div>
-              <h3 className="font-bold text-lg mb-4 bg-gradient-to-r from-[#FF6B6B] to-[#6C5CE7] bg-clip-text text-transparent">
+              <h3 className="font-bold text-lg mb-4 bg-gradient-to-r from-yellow-500 to-gray-700 bg-clip-text text-transparent">
                 О проекте
               </h3>
               <p className="text-gray-600">
@@ -387,24 +414,24 @@ export default function Index() {
               </p>
             </div>
             <div>
-              <h3 className="font-bold text-lg mb-4 bg-gradient-to-r from-[#4ECDC4] to-[#6C5CE7] bg-clip-text text-transparent">
+              <h3 className="font-bold text-lg mb-4 bg-gradient-to-r from-yellow-500 to-gray-700 bg-clip-text text-transparent">
                 Помощь
               </h3>
               <ul className="space-y-2 text-gray-600">
-                <li className="hover:text-[#6C5CE7] cursor-pointer transition-colors">Как создать запрос</li>
-                <li className="hover:text-[#6C5CE7] cursor-pointer transition-colors">Как откликнуться</li>
-                <li className="hover:text-[#6C5CE7] cursor-pointer transition-colors">Правила платформы</li>
+                <li className="hover:text-yellow-600 cursor-pointer transition-colors">Как создать запрос</li>
+                <li className="hover:text-yellow-600 cursor-pointer transition-colors">Как откликнуться</li>
+                <li className="hover:text-yellow-600 cursor-pointer transition-colors">Правила платформы</li>
               </ul>
             </div>
             <div>
-              <h3 className="font-bold text-lg mb-4 bg-gradient-to-r from-[#FFE66D] to-[#FF6B6B] bg-clip-text text-transparent">
+              <h3 className="font-bold text-lg mb-4 bg-gradient-to-r from-yellow-500 to-gray-700 bg-clip-text text-transparent">
                 Контакты
               </h3>
               <div className="flex gap-3">
-                <Button size="icon" variant="outline" className="rounded-full hover:border-[#6C5CE7]">
+                <Button size="icon" variant="outline" className="rounded-full hover:border-yellow-500">
                   <Icon name="Send" size={18} />
                 </Button>
-                <Button size="icon" variant="outline" className="rounded-full hover:border-[#6C5CE7]">
+                <Button size="icon" variant="outline" className="rounded-full hover:border-yellow-500">
                   <Icon name="Mail" size={18} />
                 </Button>
               </div>
