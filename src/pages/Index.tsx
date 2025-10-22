@@ -5,6 +5,10 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Icon from '@/components/ui/icon';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface Request {
   id: number;
@@ -60,6 +64,24 @@ const mockRequests: Request[] = [
 
 export default function Index() {
   const [activeTab, setActiveTab] = useState('feed');
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setSelectedImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleCreateRequest = () => {
+    setIsCreateDialogOpen(false);
+    setSelectedImage(null);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
@@ -74,9 +96,145 @@ export default function Index() {
                 Маркетплейс Запросов
               </h1>
             </div>
-            <Button className="bg-gradient-to-r from-[#FF6B6B] to-[#6C5CE7] hover:opacity-90 text-white shadow-lg">
-              Создать запрос
-            </Button>
+            <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+              <DialogTrigger asChild>
+                <Button className="bg-gradient-to-r from-[#FF6B6B] to-[#6C5CE7] hover:opacity-90 text-white shadow-lg">
+                  Создать запрос
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-[#FF6B6B] to-[#6C5CE7] bg-clip-text text-transparent">
+                    Создать новый запрос
+                  </DialogTitle>
+                </DialogHeader>
+                <div className="space-y-6 py-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="title" className="text-base font-semibold">
+                      Что вы ищете? *
+                    </Label>
+                    <Input
+                      id="title"
+                      placeholder="Например: Ищу iPhone 15 Pro"
+                      className="h-12 text-base"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="category" className="text-base font-semibold">
+                      Категория *
+                    </Label>
+                    <Select>
+                      <SelectTrigger className="h-12 text-base">
+                        <SelectValue placeholder="Выберите категорию" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {categories.map((cat) => (
+                          <SelectItem key={cat.name} value={cat.name}>
+                            <div className="flex items-center gap-2">
+                              <Icon name={cat.icon as any} size={18} />
+                              {cat.name}
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="budget" className="text-base font-semibold">
+                      Бюджет
+                    </Label>
+                    <Input
+                      id="budget"
+                      placeholder="Например: до 120 000 ₽ или договорная"
+                      className="h-12 text-base"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="description" className="text-base font-semibold">
+                      Описание запроса *
+                    </Label>
+                    <Textarea
+                      id="description"
+                      placeholder="Опишите подробно, что вы ищете. Укажите важные детали: состояние, характеристики, желаемые сроки и т.д."
+                      className="min-h-[120px] text-base resize-none"
+                      maxLength={1000}
+                    />
+                    <p className="text-sm text-gray-500">Максимум 1000 символов</p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-base font-semibold">
+                      Фото (необязательно)
+                    </Label>
+                    <div className="border-2 border-dashed border-gray-300 rounded-2xl p-8 text-center hover:border-[#6C5CE7] transition-colors cursor-pointer">
+                      <input
+                        type="file"
+                        id="image-upload"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        className="hidden"
+                      />
+                      <label htmlFor="image-upload" className="cursor-pointer">
+                        {selectedImage ? (
+                          <div className="space-y-4">
+                            <img
+                              src={selectedImage}
+                              alt="Preview"
+                              className="max-h-48 mx-auto rounded-lg object-cover"
+                            />
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                setSelectedImage(null);
+                              }}
+                            >
+                              Удалить фото
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="space-y-3">
+                            <div className="w-16 h-16 mx-auto rounded-full bg-gradient-to-br from-[#FF6B6B] to-[#6C5CE7] flex items-center justify-center">
+                              <Icon name="Upload" className="text-white" size={32} />
+                            </div>
+                            <div>
+                              <p className="text-base font-medium text-gray-700">
+                                Загрузите фото
+                              </p>
+                              <p className="text-sm text-gray-500 mt-1">
+                                PNG, JPG до 10MB
+                              </p>
+                            </div>
+                          </div>
+                        )}
+                      </label>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-3 pt-4">
+                    <Button
+                      onClick={handleCreateRequest}
+                      className="flex-1 h-12 bg-gradient-to-r from-[#FF6B6B] to-[#6C5CE7] hover:opacity-90 text-white shadow-lg text-base font-semibold"
+                    >
+                      <Icon name="Send" size={20} className="mr-2" />
+                      Опубликовать запрос
+                    </Button>
+                    <Button
+                      onClick={() => setIsCreateDialogOpen(false)}
+                      variant="outline"
+                      className="h-12 px-6 border-2"
+                    >
+                      Отмена
+                    </Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
       </header>
