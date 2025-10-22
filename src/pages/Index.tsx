@@ -19,7 +19,6 @@ interface Request {
   authorAvatar: string;
   rating: number;
   responses: number;
-  description?: string;
 }
 
 const categories = [
@@ -39,8 +38,7 @@ const mockRequests: Request[] = [
     author: 'Анна Смирнова',
     authorAvatar: 'AS',
     rating: 4.8,
-    responses: 12,
-    description: 'Ищу iPhone 15 Pro в хорошем состоянии, желательно с комплектом. Интересует модель на 256GB или 512GB. Готов рассмотреть варианты с небольшими царапинами.'
+    responses: 12
   },
   {
     id: 2,
@@ -50,8 +48,7 @@ const mockRequests: Request[] = [
     author: 'Дмитрий Козлов',
     authorAvatar: 'ДК',
     rating: 4.9,
-    responses: 8,
-    description: 'Требуется опытный мастер для комплексного ремонта квартиры 60кв.м. Нужно сделать штукатурку, шпаклевку, поклейку обоев, укладку ламината.'
+    responses: 8
   },
   {
     id: 3,
@@ -61,8 +58,7 @@ const mockRequests: Request[] = [
     author: 'Елена Волкова',
     authorAvatar: 'ЕВ',
     rating: 5.0,
-    responses: 15,
-    description: 'Ищу MacBook Air M2 для работы и учебы. Интересует базовая конфигурация 8GB/256GB. Состояние хорошее или отличное, без повреждений.'
+    responses: 15
   }
 ];
 
@@ -70,19 +66,6 @@ export default function Index() {
   const [activeTab, setActiveTab] = useState('feed');
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [expandedRequests, setExpandedRequests] = useState<Set<number>>(new Set());
-
-  const toggleExpanded = (id: number) => {
-    setExpandedRequests(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(id)) {
-        newSet.delete(id);
-      } else {
-        newSet.add(id);
-      }
-      return newSet;
-    });
-  };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -291,7 +274,7 @@ export default function Index() {
             <Icon name="Search" className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
             <Input
               placeholder="Поиск запросов..."
-              className="pl-12 h-14 text-lg rounded-2xl border-2 border-gray-200 focus:border-[#6C5CE7] transition-colors">
+              className="pl-12 h-14 text-lg rounded-2xl border-2 border-gray-200 focus:border-[#6C5CE7] transition-colors"
             />
           </div>
         </div>
@@ -359,12 +342,6 @@ export default function Index() {
                       </Badge>
                     </div>
 
-                    {expandedRequests.has(request.id) && request.description && (
-                      <div className="mb-4 p-4 bg-gray-50 rounded-lg animate-fade-in">
-                        <p className="text-gray-700 leading-relaxed">{request.description}</p>
-                      </div>
-                    )}
-
                     <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 mb-4">
                       <div className="flex items-center gap-1.5">
                         <Icon name="Wallet" size={16} className="text-[#4ECDC4]" />
@@ -385,13 +362,9 @@ export default function Index() {
                         <Icon name="Send" size={16} />
                         Откликнуться
                       </Button>
-                      <Button 
-                        variant="outline" 
-                        className="gap-2 border-2 hover:border-[#6C5CE7]"
-                        onClick={() => toggleExpanded(request.id)}
-                      >
-                        <Icon name={expandedRequests.has(request.id) ? "ChevronUp" : "ChevronDown"} size={16} />
-                        {expandedRequests.has(request.id) ? 'Свернуть' : 'Развернуть'}
+                      <Button variant="outline" className="gap-2 border-2 hover:border-[#6C5CE7]">
+                        <Icon name="Eye" size={16} />
+                        Подробнее
                       </Button>
                     </div>
                   </div>
